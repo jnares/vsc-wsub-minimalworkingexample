@@ -1,0 +1,22 @@
+#!/bin/bash -l
+#PBS -l nodes=1:ppn=28:skylake
+#PBS -l walltime=01:00:00
+#PBS -j oe
+
+cd $PBS_O_WORKDIR
+jobid=$(awk -F. '{print $1}' <<< $PBS_JOBID)
+start_time="$(date -u +%s.%N)"
+echo $jobid > jobid
+rdm=`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`
+echo "${desfile}-${rdm} start $start_time"
+
+#filenames
+# generate the mps file
+./writemps ${desfile}
+
+end_time="$(date -u +%s.%N)"
+echo "${desfile}-${rdm} end $end_time"
+elapsed="$(bc <<<"$end_time-$start_time")"
+echo "${desfile}-${rdm} cputime $elapsed"
+
+
